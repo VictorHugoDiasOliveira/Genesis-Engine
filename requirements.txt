@@ -1,0 +1,8 @@
+# Optional dependencies for Genesis-Engine
+# The initial prototype uses only the Python standard library.
+
+# To evolve towards real embeddings and vector databases:
+# langchain
+# chromadb
+# sentence-transformers
+# faiss-cpu
