@@ -67,3 +67,14 @@ Updated scripts/seed_rag.py to ingest knowledge/infra/ into the infra namespace.
 Updated CLAUDE.md knowledge namespace table to include infra and external with descriptions.
 All four namespaces (dev, business, infra, external) verified working.
 
+## Reorganize knowledge/ — remove infra namespace — Decision
+
+- **Date:** 2026-06-06T22:53:29Z
+- **Category:** Decision
+
+Removed knowledge/infra/ as a top-level namespace.
+Rationale: external/ already covers infra content from Skills.sh and third-party references.
+Having a separate infra namespace created redundancy when all external knowledge (infra, database, clean-code, etc.) comes from the same origin.
+external/ now uses subdirectories to organize by theme (e.g. infra/, database/, clean-code/).
+Updated seed_rag.py, CLAUDE.md namespace table, and external/README.md accordingly.
+
