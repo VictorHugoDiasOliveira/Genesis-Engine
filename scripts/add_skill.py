@@ -1,16 +1,19 @@
 """
 Add a skill from .agents/skills/ into the RAG knowledge base.
 
+Each skill is placed in its own subdirectory under knowledge/external/<theme>/<skill-name>/
+to avoid overwriting files when multiple skills share the same theme.
+
 Usage:
     python scripts/add_skill.py <skill-name> <theme>
 
 Arguments:
     skill-name  Directory name under .agents/skills/
-    theme       Subdirectory under knowledge/external/ (e.g. clean-code, infra, database)
+    theme       Subdirectory under knowledge/external/ (e.g. best-practices, languages/python)
 
 Example:
-    python scripts/add_skill.py clean-code clean-code
-    python scripts/add_skill.py react-best-practices frontend
+    python scripts/add_skill.py clean-code best-practices
+    python scripts/add_skill.py python-best-practices languages/python
 """
 
 from __future__ import annotations
@@ -30,7 +33,7 @@ def add_skill(skill_name: str, theme: str) -> None:
         print(f"Error: skill '{skill_name}' not found in {SKILLS_DIR}")
         sys.exit(1)
 
-    dest_dir = KNOWLEDGE_EXTERNAL / theme
+    dest_dir = KNOWLEDGE_EXTERNAL / theme / skill_name
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     copied = []
@@ -45,7 +48,7 @@ def add_skill(skill_name: str, theme: str) -> None:
         print(f"Warning: no markdown files found in skill '{skill_name}'")
         return
 
-    print(f"Skill '{skill_name}' added to knowledge/external/{theme}/")
+    print(f"Skill '{skill_name}' added to knowledge/external/{theme}/{skill_name}/")
     for path in copied:
         print(f"  + {path}")
 

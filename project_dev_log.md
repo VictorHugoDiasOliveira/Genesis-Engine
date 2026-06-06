@@ -98,3 +98,20 @@ Defined default themes for knowledge/external/ subdirectories: best-practices, l
 Themes are a convention, not a closed list — new themes can be created whenever a skill does not fit an existing one.
 Updated CLAUDE.md with the theme table and the explicit note that themes are extensible.
 
+## Install and ingest 7 Python skills for CLI development — Task
+
+- **Date:** 2026-06-06T23:08:58Z
+- **Category:** Task
+
+Installed and ingested the following skills from Skills.sh in preparation for item 2 (interactive CLI):
+
+best-practices/clean-code (245 installs) — naming, functions, classes, error handling, tests
+languages/python/building-python-clis (76 installs) — Python CLI best practices
+languages/python/python-performance-optimization (25.4K installs) — advanced patterns, profiling
+languages/python/python-mcp-server-generator (9.6K installs) — MCP server generation patterns
+languages/python/dataverse-python-advanced-patterns (8.9K installs) — advanced Python patterns
+testing/temporal-python-testing (7.2K installs) — unit, integration, replay testing
+languages/python/python-best-practices (1.6K installs) — general Python best practices
+
+Fixed add_skill.py to place each skill in its own subdirectory (knowledge/external/<theme>/<skill-name>/) to prevent file collisions when multiple skills share a theme.
+
