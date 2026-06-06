@@ -48,11 +48,13 @@ All code, comments, documentation, log entries, and any content written by Claud
 
 ## Implementation Workflow
 
-Every implementation in this repository must follow this cycle — no exceptions:
+Every change in this repository must follow this cycle — no exceptions. This includes code, documentation, configuration files, scripts, and any infrastructure changes (e.g., `.gitignore`, `requirements.txt`):
 
 1. **Query** — search the RAG for relevant context before starting
 2. **Implement** — write code or update documentation
 3. **Log** — record what was done in `project_dev_log.md` via `ProjectJournal.append_entry()`
+
+**There are no changes too small to log.** Every action taken by Claude Code must be traceable in `project_dev_log.md`.
 
 ## Log Entry Categories
 

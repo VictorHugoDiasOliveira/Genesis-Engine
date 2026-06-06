@@ -23,3 +23,23 @@ Enable any project to grow with automated agent support.
 
 <!-- All entries below are appended by agents using ProjectJournal.append_entry().
      Valid categories: Architecture | Implementation | Decision | Task | Documentation -->
+## Project Foundation Setup — Documentation
+
+- **Date:** 2026-06-06T22:42:54Z
+- **Category:** Documentation
+
+Translated all files from Portuguese to English (code, docs, strings, comments).
+Added CLAUDE.md with architecture overview, implementation workflow, and log entry categories.
+Formalized the Query → Implement → Log cycle as a mandatory rule for all agent actions.
+Cleaned up docs/genesis-vision.md (removed duplicated sections, consolidated content).
+Restructured project_dev_log.md with defined log entry categories.
+
+## Add .gitignore and remove tracked __pycache__ — Implementation
+
+- **Date:** 2026-06-06T22:42:54Z
+- **Category:** Implementation
+
+Created .gitignore to exclude Python bytecode (__pycache__, *.pyc), virtual environments,
+build artifacts, IDE files, and future vector store files (*.faiss, *.index, chroma/).
+Removed already-tracked genesis_engine/__pycache__/ files from git history.
+
