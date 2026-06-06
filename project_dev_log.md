@@ -152,3 +152,13 @@ Results below the threshold were showing irrelevant documents due to coincidenta
 Default of 0.10 filters out noise while keeping genuinely relevant results.
 User can override with --min-score 0.05 for broader results or --min-score 0.20 for stricter filtering.
 
+## Install rag-architect and rag-implementation skills — Task
+
+- **Date:** 2026-06-06T23:22:27Z
+- **Category:** Task
+
+Installed two RAG-specific skills and added to knowledge/external/rag/:
+- jeffallan/claude-skills@rag-architect (2.7K installs) — chunking strategies, embedding models, vector databases, retrieval optimization, RAG evaluation
+- wshobson/agents@rag-implementation (from wshobson/agents) — RAG implementation patterns and details
+Both verified in RAG: appear at top results for 'RAG semantic search vector database' queries.
+
