@@ -85,7 +85,18 @@ npx skills add <owner/repo@clean-code>
 python scripts/add_skill.py clean-code clean-code
 ```
 
-Skill themes map to `knowledge/external/` subdirectories. Use descriptive theme names: `clean-code`, `infra`, `database`, `frontend`, `testing`, etc.
+Skill themes map to `knowledge/external/` subdirectories. Default themes to reuse when applicable:
+
+| Theme | Content |
+|-------|---------|
+| `best-practices/` | Language-agnostic clean code, general patterns |
+| `languages/<lang>/` | Language-specific skills (e.g. `languages/python/`, `languages/javascript/`) |
+| `infra/` | Docker, CI/CD, cloud, IaC |
+| `database/` | SQL, NoSQL, data modeling |
+| `testing/` | Testing strategies, any language |
+| `agent-skills/` | Skills about agent workflows and capabilities |
+
+If a skill does not fit any existing theme, create a new descriptive subdirectory. Themes are a convention, not a closed list.
 
 ## Key Conventions
 

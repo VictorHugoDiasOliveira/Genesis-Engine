@@ -89,3 +89,12 @@ This enables autonomous skill discovery: identify need → find skill → instal
 Added find-skills skill to knowledge/external/agent-skills/ as first example.
 Updated CLAUDE.md with the full skill workflow including when to proactively look for skills.
 
+## Define knowledge/external/ theme conventions — Decision
+
+- **Date:** 2026-06-06T23:03:00Z
+- **Category:** Decision
+
+Defined default themes for knowledge/external/ subdirectories: best-practices, languages/<lang>, infra, database, testing, agent-skills.
+Themes are a convention, not a closed list — new themes can be created whenever a skill does not fit an existing one.
+Updated CLAUDE.md with the theme table and the explicit note that themes are extensible.
+
