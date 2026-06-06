@@ -56,3 +56,14 @@ Each namespace has a README.md describing its purpose and what to add.
 Updated scripts/seed_rag.py to ingest from knowledge/ namespaces instead of docs/.
 Verified ingestion works: all three namespaces return results for semantic queries.
 
+## Add infra namespace to knowledge base — Decision
+
+- **Date:** 2026-06-06T22:48:50Z
+- **Category:** Decision
+
+Added knowledge/infra/ as a dedicated RAG namespace for infrastructure knowledge.
+Rationale: infra context (cloud, IaC, CI/CD, deploy) is distinct from dev and should not pollute code/architecture queries.
+Updated scripts/seed_rag.py to ingest knowledge/infra/ into the infra namespace.
+Updated CLAUDE.md knowledge namespace table to include infra and external with descriptions.
+All four namespaces (dev, business, infra, external) verified working.
+

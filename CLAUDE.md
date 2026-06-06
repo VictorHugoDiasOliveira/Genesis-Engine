@@ -35,8 +35,10 @@ The RAG is split into two namespaces (as shown in `scripts/seed_rag.py` and `doc
 |-----------|---------|
 | `dev` | Architecture docs, ADRs, technical patterns, code history |
 | `business` | Mission/vision/values, business strategy, OKRs, go-to-market |
+| `infra` | Cloud architecture, IaC, Docker, CI/CD, deploy runbooks, monitoring |
+| `external` | External sources: Skills.sh, third-party references, industry standards |
 
-Planned directory layout for knowledge sources: `knowledge/dev/`, `knowledge/business/`, `knowledge/external/`.
+Knowledge directory layout: `knowledge/dev/`, `knowledge/business/`, `knowledge/infra/`, `knowledge/external/`.
 
 ### Source of Truth
 
