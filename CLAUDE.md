@@ -69,8 +69,27 @@ All journal entries must use one of these categories:
 | `Task` | New tasks defined or completed |
 | `Documentation` | Docs created or updated |
 
+## Skill Workflow (Skills.sh)
+
+Skills from [skills.sh](https://skills.sh/) extend agent capabilities and feed the RAG with external knowledge. Use this workflow autonomously whenever a task would benefit from external best practices:
+
+1. **Identify the need** — based on the current task, determine what external knowledge would help (e.g. building a CLI → look for `clean-code` or `python-best-practices`)
+2. **Find the skill** — use `npx skills find <query>` or browse skills.sh. Prefer skills with 1K+ installs from reputable sources
+3. **Install** — `npx skills add <owner/repo@skill-name>` installs to `.agents/skills/<skill-name>/`
+4. **Add to RAG** — run `python scripts/add_skill.py <skill-name> <theme>` to copy the skill into `knowledge/external/<theme>/`
+5. **Log** — record the skill added and why in `project_dev_log.md`
+
+```bash
+# Example: adding a clean-code skill before building the CLI
+npx skills add <owner/repo@clean-code>
+python scripts/add_skill.py clean-code clean-code
+```
+
+Skill themes map to `knowledge/external/` subdirectories. Use descriptive theme names: `clean-code`, `infra`, `database`, `frontend`, `testing`, etc.
+
 ## Key Conventions
 
 - **RAG before coding**: Always search the relevant namespace before implementing a feature or making an architectural decision.
+- **Skills before complex tasks**: If a task involves a domain with likely external best practices, proactively find and install a relevant skill before starting.
 - **Log after acting**: Use `ProjectJournal` to record what was done, why, and the category from the table above.
 - **Docs as knowledge**: All markdown files in `docs/` are intended to be ingested into the RAG — keep them accurate and up to date, as they directly inform agent behavior.

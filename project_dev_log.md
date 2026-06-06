@@ -78,3 +78,14 @@ Having a separate infra namespace created redundancy when all external knowledge
 external/ now uses subdirectories to organize by theme (e.g. infra/, database/, clean-code/).
 Updated seed_rag.py, CLAUDE.md namespace table, and external/README.md accordingly.
 
+## Add skill ingestion workflow and add_skill.py script — Implementation
+
+- **Date:** 2026-06-06T23:00:16Z
+- **Category:** Implementation
+
+Created scripts/add_skill.py to bridge Skills.sh and the RAG knowledge base.
+The script reads skill content from .agents/skills/<skill-name>/ and copies markdown files to knowledge/external/<theme>/.
+This enables autonomous skill discovery: identify need → find skill → install → add to RAG → log.
+Added find-skills skill to knowledge/external/agent-skills/ as first example.
+Updated CLAUDE.md with the full skill workflow including when to proactively look for skills.
+
