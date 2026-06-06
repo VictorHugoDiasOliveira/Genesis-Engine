@@ -8,9 +8,20 @@ Genesis Engine is an AI-driven development orchestration platform. It uses RAG (
 
 **Before implementing anything**, query the knowledge base for relevant context (architecture decisions, business rules, prior decisions). After each implementation, append a summary to `project_dev_log.md`.
 
-## Running the CLI
+## Setup
 
-The project has no external dependencies — only the Python standard library is used.
+Semantic search requires `sentence-transformers` and `numpy`. A virtual environment is included:
+
+```bash
+# Create and populate the venv (first time only)
+uv venv .venv
+uv pip install sentence-transformers numpy --python .venv/bin/python
+
+# Always use the venv python to run CLI commands
+source .venv/bin/activate
+```
+
+## Running the CLI
 
 ```bash
 # Query the knowledge base (all namespaces)

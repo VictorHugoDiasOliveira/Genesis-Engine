@@ -4,5 +4,6 @@
 # To evolve towards real embeddings and vector databases:
 # langchain
 # chromadb
-# sentence-transformers
+sentence-transformers
+numpy
 # faiss-cpu

@@ -16,6 +16,9 @@ eggs/
 venv/
 env/
 
+# Sentence transformers model cache
+.cache/
+
 # Distribution / packaging
 *.so
 

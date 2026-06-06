@@ -162,3 +162,16 @@ Installed two RAG-specific skills and added to knowledge/external/rag/:
 - wshobson/agents@rag-implementation (from wshobson/agents) — RAG implementation patterns and details
 Both verified in RAG: appear at top results for 'RAG semantic search vector database' queries.
 
+## Replace TF-IDF with semantic embeddings (sentence-transformers) — Architecture
+
+- **Date:** 2026-06-06T23:41:11Z
+- **Category:** Architecture
+
+Replaced SimpleVectorStore (TF-IDF cosine) with SemanticVectorStore using sentence-transformers.
+Model: all-MiniLM-L6-v2 (384 dimensions, fast, free, local — as recommended by embedding-strategies and rag-architect skills).
+SimpleVectorStore kept as automatic fallback when sentence-transformers is not installed.
+Store selection is automatic via _create_store() based on import availability.
+Results are now semantically ranked: 'How to build a rag?' correctly returns rag/rag-architect (0.38) and rag/rag-implementation (0.31) at the top.
+Added uv venv .venv setup instructions to CLAUDE.md.
+Dependencies: sentence-transformers and numpy added to requirements.txt and installed in .venv.
+
