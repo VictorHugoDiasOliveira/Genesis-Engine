@@ -49,7 +49,7 @@ def cmd_query(args: argparse.Namespace) -> None:
 
     found_any = False
     for namespace, items in results.items():
-        relevant = [r for r in items if r.score > 0.0]
+        relevant = [r for r in items if r.score >= args.min_score]
         if not relevant:
             continue
         found_any = True
@@ -115,6 +115,13 @@ def main() -> None:
         default=5,
         metavar="N",
         help="Number of results per namespace (default: 5)",
+    )
+    query_parser.add_argument(
+        "--min-score",
+        type=float,
+        default=0.10,
+        metavar="SCORE",
+        help="Minimum relevance score to show a result (default: 0.10)",
     )
     query_parser.set_defaults(func=cmd_query)
 

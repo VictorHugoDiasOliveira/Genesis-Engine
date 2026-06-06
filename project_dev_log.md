@@ -142,3 +142,13 @@ small focused functions, one responsibility per command, descriptive names, clea
 Namespace loading is automatic: dev and business use ingest_markdown_directory, external uses ingest_skill_namespace.
 Updated CLAUDE.md with full CLI usage examples.
 
+## CLI: add minimum score threshold to filter noise — Implementation
+
+- **Date:** 2026-06-06T23:20:18Z
+- **Category:** Implementation
+
+Added --min-score option to the query command (default: 0.10).
+Results below the threshold were showing irrelevant documents due to coincidental token overlap in TF-IDF similarity.
+Default of 0.10 filters out noise while keeping genuinely relevant results.
+User can override with --min-score 0.05 for broader results or --min-score 0.20 for stricter filtering.
+
