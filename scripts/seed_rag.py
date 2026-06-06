@@ -9,8 +9,9 @@ from genesis_engine.rag import KnowledgeManager
 
 def main() -> None:
     manager = KnowledgeManager()
-    manager.ingest_markdown_directory("dev", "docs")
-    manager.ingest_markdown_directory("business", "docs")
+    manager.ingest_markdown_directory("dev", "knowledge/dev")
+    manager.ingest_markdown_directory("business", "knowledge/business")
+    manager.ingest_markdown_directory("external", "knowledge/external")
 
     query = "How should Genesis Engine use RAG to support development?"
     results = manager.search(query, k=5)

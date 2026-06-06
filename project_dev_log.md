@@ -43,3 +43,16 @@ Created .gitignore to exclude Python bytecode (__pycache__, *.pyc), virtual envi
 build artifacts, IDE files, and future vector store files (*.faiss, *.index, chroma/).
 Removed already-tracked genesis_engine/__pycache__/ files from git history.
 
+## Create knowledge/ directory structure — Implementation
+
+- **Date:** 2026-06-06T22:45:05Z
+- **Category:** Implementation
+
+Created knowledge/ with three namespaces: dev, business, external.
+- knowledge/dev/: architecture.md, rag-strategy.md, roadmap.md — technical knowledge
+- knowledge/business/: genesis-vision.md — mission, vision, strategy
+- knowledge/external/: reserved for external sources (Skills.sh, third-party refs)
+Each namespace has a README.md describing its purpose and what to add.
+Updated scripts/seed_rag.py to ingest from knowledge/ namespaces instead of docs/.
+Verified ingestion works: all three namespaces return results for semantic queries.
+
