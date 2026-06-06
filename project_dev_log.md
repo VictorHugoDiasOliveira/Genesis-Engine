@@ -127,3 +127,18 @@ The agent now reads the full skill content after receiving a relevant theme from
 Updated seed_rag.py to use ingest_skill_namespace() for the external namespace.
 SKILL.md presence is used as the anchor to identify skill root directories — ties directly to the add_skill.py convention.
 
+## Implement interactive CLI (item 2) — Implementation
+
+- **Date:** 2026-06-06T23:15:44Z
+- **Category:** Implementation
+
+Created genesis_engine/cli.py with three subcommands:
+- query <text> — searches the knowledge base across all or selected namespaces, returns themes with scores
+- read <theme> — prints full content of an external skill theme (e.g. best-practices/clean-code)
+- namespaces — lists all available namespaces
+
+Built with argparse (zero external deps). Follows clean-code and python-best-practices skills:
+small focused functions, one responsibility per command, descriptive names, clear output.
+Namespace loading is automatic: dev and business use ingest_markdown_directory, external uses ingest_skill_namespace.
+Updated CLAUDE.md with full CLI usage examples.
+

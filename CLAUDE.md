@@ -8,13 +8,26 @@ Genesis Engine is an AI-driven development orchestration platform. It uses RAG (
 
 **Before implementing anything**, query the knowledge base for relevant context (architecture decisions, business rules, prior decisions). After each implementation, append a summary to `project_dev_log.md`.
 
-## Running the Prototype
+## Running the CLI
 
-The project has no external dependencies in its current prototype state — only the Python standard library is used.
+The project has no external dependencies — only the Python standard library is used.
 
 ```bash
-# Run the RAG seed/demo script
-python scripts/seed_rag.py
+# Query the knowledge base (all namespaces)
+python -m genesis_engine.cli query "your question"
+
+# Query a specific namespace
+python -m genesis_engine.cli query "your question" --namespace external
+
+# Increase number of results
+python -m genesis_engine.cli query "your question" -k 10
+
+# Read full content of an external skill theme
+python -m genesis_engine.cli read best-practices/clean-code
+python -m genesis_engine.cli read languages/python/building-python-clis
+
+# List available namespaces
+python -m genesis_engine.cli namespaces
 ```
 
 To upgrade to real embeddings (optional), install from `requirements.txt` after uncommenting the desired packages.
