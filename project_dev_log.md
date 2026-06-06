@@ -115,3 +115,15 @@ languages/python/python-best-practices (1.6K installs) — general Python best p
 
 Fixed add_skill.py to place each skill in its own subdirectory (knowledge/external/<theme>/<skill-name>/) to prevent file collisions when multiple skills share a theme.
 
+## RAG: index external skills by theme instead of by file — Architecture
+
+- **Date:** 2026-06-06T23:13:59Z
+- **Category:** Architecture
+
+Added ingest_skill_namespace() to RAGKnowledgeBase and KnowledgeManager.
+Each skill directory (anchored by SKILL.md) is ingested as a single document by concatenating all its markdown files.
+This means the RAG returns themes like 'best-practices/clean-code' instead of individual files like 'chapters/functions.md'.
+The agent now reads the full skill content after receiving a relevant theme from the RAG.
+Updated seed_rag.py to use ingest_skill_namespace() for the external namespace.
+SKILL.md presence is used as the anchor to identify skill root directories — ties directly to the add_skill.py convention.
+

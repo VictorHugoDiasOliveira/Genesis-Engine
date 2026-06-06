@@ -11,7 +11,7 @@ def main() -> None:
     manager = KnowledgeManager()
     manager.ingest_markdown_directory("dev", "knowledge/dev")
     manager.ingest_markdown_directory("business", "knowledge/business")
-    manager.ingest_markdown_directory("external", "knowledge/external")
+    manager.ingest_skill_namespace("external", "knowledge/external")
 
     query = "How should Genesis Engine use RAG to support development?"
     results = manager.search(query, k=5)

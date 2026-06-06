@@ -82,6 +82,28 @@ class RAGKnowledgeBase:
             metadata = {"path": str(file_path)}
             self.ingest_document(source=source, content=content, metadata=metadata)
 
+    def ingest_skill_namespace(self, directory: str) -> None:
+        """Ingest each leaf skill directory as a single document.
+
+        Walks knowledge/external/<theme>/<skill-name>/ and concatenates all
+        markdown files within each skill into one document, so the RAG returns
+        themes rather than individual files.
+        """
+        base = Path(directory)
+        if not base.exists() or not base.is_dir():
+            raise ValueError(f"Invalid directory: {directory}")
+
+        skill_dirs = sorted(
+            skill_md.parent for skill_md in base.rglob("SKILL.md")
+        )
+
+        for skill_dir in skill_dirs:
+            md_files = sorted(skill_dir.rglob("*.md"))
+            content = "\n\n".join(f.read_text(encoding="utf-8") for f in md_files)
+            source = str(skill_dir.relative_to(base))
+            metadata = {"path": str(skill_dir), "type": "skill"}
+            self.ingest_document(source=source, content=content, metadata=metadata)
+
     def search(self, query: str, k: int = 5) -> List[RetrievalResult]:
         return self.store.similarity_search(query, k=k)
 
@@ -110,6 +132,10 @@ class KnowledgeManager:
     def ingest_markdown_directory(self, namespace: str, directory: str) -> None:
         kb = self.add_namespace(namespace)
         kb.ingest_markdown_dir(directory)
+
+    def ingest_skill_namespace(self, namespace: str, directory: str) -> None:
+        kb = self.add_namespace(namespace)
+        kb.ingest_skill_namespace(directory)
 
     def list_namespaces(self) -> List[str]:
         return sorted(self.namespaces.keys())
