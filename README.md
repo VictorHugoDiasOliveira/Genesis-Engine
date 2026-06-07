@@ -48,7 +48,7 @@ git clone https://github.com/VictorHugoDiasOliveira/Genesis-Engine
 cd Genesis-Engine
 
 uv venv .venv
-uv pip install sentence-transformers numpy einops --python .venv/bin/python
+uv pip install sentence-transformers numpy einops pyyaml --python .venv/bin/python
 source .venv/bin/activate
 ```
 

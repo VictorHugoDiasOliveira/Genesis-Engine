@@ -220,3 +220,19 @@ Key changes across all docs:
 
 All docs/ files synced to knowledge/ for RAG ingestion. Cache invalidated. Vision also saved to persistent memory.
 
+## Structural Refactor — Abstract Interfaces and Config Foundation — Architecture
+
+- **Date:** 2026-06-07T01:19:16Z
+- **Category:** Architecture
+
+Aligned codebase with the Genesis Engine platform vision (hosted, multi-project).
+
+Changes:
+- rag.py: Added VectorStore ABC (abstractmethod add_documents and similarity_search). SimpleVectorStore and SemanticVectorStore now implement VectorStore. _create_store() return type is VectorStore. Phase 1 will add HostedVectorStore without touching existing implementations.
+- project_journal.py: Added Journal ABC (abstractmethod append_entry, read_log, list_entries). ProjectJournal implements Journal. Phase 1 will add HostedJournal.
+- config.py (new): GenesisConfig dataclass loaded from genesis.yaml via pyyaml. Supports mode=local (default) and mode=hosted (Phase 1). Provides knowledge_dir, llm_routing (per-task LLM provider), and API connection settings. Falls back to all defaults when no genesis.yaml exists.
+- cli.py: Now loads GenesisConfig via load_config() instead of hardcoding ROOT/knowledge. Raises NotImplementedError with a clear message when mode=hosted is set before Phase 1 is built.
+- requirements.txt: Added pyyaml.
+- CLAUDE.md: Added This Repository section clarifying this is the engine repo, not a consuming project. Updated Architecture section to mention VectorStore ABC, config.py, and Journal ABC.
+- README.md: Updated setup command with pyyaml.
+

@@ -7,4 +7,5 @@
 sentence-transformers
 numpy
 einops          # required by nomic-embed-text-v1.5
+pyyaml          # genesis.yaml config support
 # faiss-cpu

@@ -1,6 +1,8 @@
 """
 Genesis Engine CLI — query the knowledge base from the terminal.
 
+Reads genesis.yaml if present; falls back to local mode with knowledge/ directory.
+
 Usage:
     python -m genesis_engine.cli query "your question"
     python -m genesis_engine.cli query "your question" --namespace dev --namespace external
@@ -16,19 +18,29 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-KNOWLEDGE_DIR = ROOT / "knowledge"
 
 
 def build_manager():
     sys.path.insert(0, str(ROOT))
+    from genesis_engine.config import load_config
     from genesis_engine.rag import KnowledgeManager
 
+    config = load_config(ROOT / "genesis.yaml")
+
+    if config.is_hosted:
+        # Phase 1: HostedVectorStore will be wired here.
+        raise NotImplementedError(
+            "Hosted mode is not yet implemented. Remove 'mode: hosted' from genesis.yaml "
+            "or wait for Phase 1."
+        )
+
+    knowledge_dir = ROOT / config.knowledge_dir
     manager = KnowledgeManager()
 
     namespace_dirs = {
-        "dev": KNOWLEDGE_DIR / "dev",
-        "business": KNOWLEDGE_DIR / "business",
-        "external": KNOWLEDGE_DIR / "external",
+        "dev": knowledge_dir / "dev",
+        "business": knowledge_dir / "business",
+        "external": knowledge_dir / "external",
     }
 
     for name, path in namespace_dirs.items():
@@ -41,9 +53,14 @@ def build_manager():
     return manager
 
 
+def _knowledge_external(config_path: Path) -> Path:
+    from genesis_engine.config import load_config
+    config = load_config(config_path)
+    return ROOT / config.knowledge_dir / "external"
+
+
 def cmd_query(args: argparse.Namespace) -> None:
     manager = build_manager()
-
     namespaces = list(args.namespace) if args.namespace else None
     results = manager.search(args.query, k=args.k, namespaces=namespaces)
 
@@ -62,7 +79,8 @@ def cmd_query(args: argparse.Namespace) -> None:
 
 
 def cmd_read(args: argparse.Namespace) -> None:
-    theme_path = KNOWLEDGE_DIR / "external" / args.theme
+    external_dir = _knowledge_external(ROOT / "genesis.yaml")
+    theme_path = external_dir / args.theme
     if not theme_path.exists():
         print(f"Theme not found: {args.theme}")
         print(f"Expected path: {theme_path}")
@@ -126,7 +144,10 @@ def main() -> None:
     query_parser.set_defaults(func=cmd_query)
 
     read_parser = subparsers.add_parser("read", help="Read full content of an external theme")
-    read_parser.add_argument("theme", help="Theme path under knowledge/external/ (e.g. best-practices/clean-code)")
+    read_parser.add_argument(
+        "theme",
+        help="Theme path under knowledge/external/ (e.g. best-practices/clean-code)",
+    )
     read_parser.set_defaults(func=cmd_read)
 
     ns_parser = subparsers.add_parser("namespaces", help="List available namespaces")

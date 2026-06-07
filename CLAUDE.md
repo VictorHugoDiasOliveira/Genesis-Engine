@@ -8,14 +8,20 @@ Genesis Engine is an AI-driven development orchestration platform. It uses RAG (
 
 **Before implementing anything**, query the knowledge base for relevant context (architecture decisions, business rules, prior decisions). After each implementation, append a summary to `project_dev_log.md`.
 
+## This Repository
+
+This is the Genesis Engine platform repository — you are working on the engine itself, not on a consuming project. The `knowledge/` directory, skills, and `project_dev_log.md` here belong to Genesis Engine's own development context.
+
+Consuming projects (e.g. MyGameList) will connect to a hosted Genesis Engine instance via API and a `genesis.yaml` config file. They will not contain a local `knowledge/` directory or skills.
+
 ## Setup
 
-Semantic search requires `sentence-transformers` and `numpy`. A virtual environment is included:
+Requires `sentence-transformers`, `numpy`, `einops`, and `pyyaml`. A virtual environment is included:
 
 ```bash
 # Create and populate the venv (first time only)
 uv venv .venv
-uv pip install sentence-transformers numpy einops --python .venv/bin/python
+uv pip install sentence-transformers numpy einops pyyaml --python .venv/bin/python
 
 # Always use the venv python to run CLI commands
 source .venv/bin/activate
@@ -47,7 +53,11 @@ To upgrade to real embeddings (optional), install from `requirements.txt` after 
 
 ### Core Modules (`genesis_engine/`)
 
-- **`rag.py`** — The RAG engine. `SimpleVectorStore` (TF-IDF fallback, no deps). `SemanticVectorStore` uses `nomic-embed-text-v1.5` (8192-token context, CPU, disk-cached embeddings under `.cache/rag_embeddings/`). Documents are chunked into ~1000-char pieces before encoding; `similarity_search` returns parent documents ranked by max chunk score (Parent Document Retriever pattern). nomic requires `search_document:` and `search_query:` prefixes. `RAGKnowledgeBase` handles per-namespace ingestion. `KnowledgeManager` routes across namespaces.
+- **`rag.py`** — The RAG engine. `VectorStore` ABC defines the interface; Phase 1 will add `HostedVectorStore`. `SimpleVectorStore` (TF-IDF fallback, no deps). `SemanticVectorStore` uses `nomic-embed-text-v1.5` (8192-token context, CPU, disk-cached embeddings under `.cache/rag_embeddings/`). Documents are chunked into ~1000-char pieces before encoding; `similarity_search` returns parent documents ranked by max chunk score (Parent Document Retriever pattern). nomic requires `search_document:` and `search_query:` prefixes. `RAGKnowledgeBase` handles per-namespace ingestion. `KnowledgeManager` routes across namespaces.
+
+- **`config.py`** — Loads `genesis.yaml` (if present) into a `GenesisConfig` dataclass. Provides `mode` (`local` | `hosted`), `knowledge_dir`, `llm_routing`, and API connection settings. Defaults to local mode when no config file exists.
+
+- **`project_journal.py`** — `Journal` ABC defines the interface; Phase 1 will add `HostedJournal`. `ProjectJournal` is the local file-based implementation wrapping `project_dev_log.md`.
 
 - **`project_journal.py`** — `ProjectJournal` wraps `project_dev_log.md` with structured append (`append_entry`), section-level update (`update_section`), and listing of all entries. This is how agents log decisions and progress.
 

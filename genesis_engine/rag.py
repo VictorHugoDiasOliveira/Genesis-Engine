@@ -4,6 +4,7 @@ import hashlib
 import math
 import pickle
 import re
+from abc import ABC, abstractmethod
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -30,6 +31,23 @@ class RetrievalResult:
     score: float
 
 
+# — Abstract interface —
+
+class VectorStore(ABC):
+    """Interface for all vector store backends (local and hosted).
+
+    Concrete implementations: SimpleVectorStore (TF-IDF, no deps),
+    SemanticVectorStore (nomic embeddings, local cache).
+    Phase 1 will add HostedVectorStore (Supabase pgvector or Pinecone).
+    """
+
+    @abstractmethod
+    def add_documents(self, documents: Iterable[Document]) -> None: ...
+
+    @abstractmethod
+    def similarity_search(self, query: str, k: int = 5) -> List[RetrievalResult]: ...
+
+
 # — TF-IDF fallback store —
 
 def _normalize_text(text: str) -> List[str]:
@@ -46,7 +64,7 @@ def _cosine_similarity(a: Counter, b: Counter) -> float:
     return numerator / denominator if denominator else 0.0
 
 
-class SimpleVectorStore:
+class SimpleVectorStore(VectorStore):
     def __init__(self) -> None:
         self.documents: List[Document] = []
         self.vectors: List[Counter] = []
@@ -99,7 +117,7 @@ def _state_hash(parent_docs: Dict[str, Document], chunk_sources: List[str]) -> s
     return h.hexdigest()[:20]
 
 
-class SemanticVectorStore:
+class SemanticVectorStore(VectorStore):
     """Dense vector store with chunking and parent-document aggregation.
 
     Documents are split into ~1000-char chunks before encoding so that no
@@ -203,7 +221,7 @@ class SemanticVectorStore:
         ]
 
 
-def _create_store() -> SimpleVectorStore | SemanticVectorStore:
+def _create_store() -> VectorStore:
     if _SEMANTIC_AVAILABLE:
         return SemanticVectorStore()
     return SimpleVectorStore()
