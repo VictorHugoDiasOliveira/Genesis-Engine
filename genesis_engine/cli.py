@@ -20,12 +20,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _resolve_config():
+    """Find genesis.yaml: CWD first (consuming project), then engine root (development)."""
+    from genesis_engine.config import load_config
+    cwd_config = Path.cwd() / "genesis.yaml"
+    if cwd_config.exists():
+        config = load_config(cwd_config)
+        base_dir = cwd_config.parent
+    else:
+        config = load_config(ROOT / "genesis.yaml")
+        base_dir = ROOT
+    return config, base_dir
+
+
 def build_manager():
     sys.path.insert(0, str(ROOT))
-    from genesis_engine.config import load_config
     from genesis_engine.rag import KnowledgeManager
 
-    config = load_config(ROOT / "genesis.yaml")
+    config, base_dir = _resolve_config()
 
     if config.is_hosted:
         # Phase 1: HostedVectorStore will be wired here.
@@ -34,7 +46,7 @@ def build_manager():
             "or wait for Phase 1."
         )
 
-    knowledge_dir = ROOT / config.knowledge_dir
+    knowledge_dir = base_dir / config.knowledge_dir
     manager = KnowledgeManager()
 
     namespace_dirs = {
@@ -51,12 +63,6 @@ def build_manager():
                 manager.ingest_markdown_directory(name, str(path))
 
     return manager
-
-
-def _knowledge_external(config_path: Path) -> Path:
-    from genesis_engine.config import load_config
-    config = load_config(config_path)
-    return ROOT / config.knowledge_dir / "external"
 
 
 def cmd_query(args: argparse.Namespace) -> None:
@@ -79,7 +85,8 @@ def cmd_query(args: argparse.Namespace) -> None:
 
 
 def cmd_read(args: argparse.Namespace) -> None:
-    external_dir = _knowledge_external(ROOT / "genesis.yaml")
+    config, base_dir = _resolve_config()
+    external_dir = base_dir / config.knowledge_dir / "external"
     theme_path = external_dir / args.theme
     if not theme_path.exists():
         print(f"Theme not found: {args.theme}")

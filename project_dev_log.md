@@ -236,3 +236,16 @@ Changes:
 - CLAUDE.md: Added This Repository section clarifying this is the engine repo, not a consuming project. Updated Architecture section to mention VectorStore ABC, config.py, and Journal ABC.
 - README.md: Updated setup command with pyyaml.
 
+## CLI Fix — Resolves genesis.yaml from CWD for Consuming Projects — Implementation
+
+- **Date:** 2026-06-07T01:29:00Z
+- **Category:** Implementation
+
+Fixed a design bug where the CLI always resolved genesis.yaml and knowledge_dir relative to the Genesis Engine repo root (ROOT), making it impossible for consuming projects (e.g. MyGameList) to use their own config.
+
+New behavior: _resolve_config() checks CWD/genesis.yaml first (consuming project), then falls back to ROOT/genesis.yaml (engine development). knowledge_dir is resolved relative to the config file's parent directory, not the engine root.
+
+Also removed the now-unused _knowledge_external() helper.
+
+Validated: running `python -m genesis_engine.cli namespaces` from MyGameList/ correctly loads MyGameList's knowledge/ namespaces.
+
