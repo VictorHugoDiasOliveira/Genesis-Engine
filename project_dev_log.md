@@ -204,3 +204,19 @@ Rewrote README.md to reflect the current state of the project. Added sections co
 
 Added explicit rule to CLAUDE.md: README.md must be updated whenever a change affects the CLI, RAG architecture, knowledge structure, setup steps, or core workflows. The README serves as context for both humans and agents. Also saved as a feedback memory so the rule persists across conversations.
 
+## Vision Clarified — Genesis Engine as Centralized Autonomous Platform — Documentation
+
+- **Date:** 2026-06-07T01:09:39Z
+- **Category:** Documentation
+
+Rewrote all core documentation to reflect the true vision of Genesis Engine: a centralized hosted platform that consuming projects connect to, not a local library they embed.
+
+Key changes across all docs:
+- genesis-vision.md: describes the platform model (projects connect to Genesis Engine, not embed it), multi-LLM by design, the knowledge loop, and full lifecycle responsibility
+- architecture.md: shows the centralized architecture diagram, all core components (Hosted RAG, Agent Connector, Skills Manager, Orchestration Layer, Project Registry), data flow, and current implementation state table
+- rag-strategy.md: updated for hosted model (Supabase pgvector), per-project namespaces, journal re-ingestion, and the prototype-to-hosted migration path
+- roadmap.md: four phases — (1) Hosted RAG, (2) Agent Connector + Business Workflow, (3) Autonomous Skills Manager + Task Engine, (4) Infra/Deploy — with clear exit criteria per phase
+- README.md: updated to reflect current state table, new vision, and links to all docs
+
+All docs/ files synced to knowledge/ for RAG ingestion. Cache invalidated. Vision also saved to persistent memory.
+

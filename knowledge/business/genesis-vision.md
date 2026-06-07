@@ -1,36 +1,63 @@
 # Genesis Engine — Vision
 
-## Purpose
-Genesis-Engine is an AI-driven orchestration platform for the full development lifecycle of companies and software. Business planning, code development, and deployment are managed by AI agents working from a shared, evolving knowledge base.
+## What Is Genesis Engine
 
-## How It Works
+Genesis Engine is an autonomous AI-driven development orchestration platform. It acts as the brain behind any software project — from the first business idea to production deployment — without requiring manual tooling inside the projects it manages.
 
-1. Documents are loaded into a knowledge base and indexed in a vector store.
-2. Agents query the RAG to gather context before generating tasks, code, or decisions.
-3. After each action, the agent records a summary in `project_dev_log.md`.
-4. The updated log feeds back into the RAG, making the system progressively smarter.
+Projects do not contain Genesis Engine. They connect to it.
 
-## Areas of Expertise
-- Business
-- Product
-- Architecture
-- Engineering
-- Marketing
-- Operations
+## The Core Idea
 
-## Capabilities
-- Strategic planning and roadmap generation
-- Task creation and prioritization
-- Code development and review
-- Documentation and evolutionary memory
+Traditional development requires developers to manually manage context, make architectural decisions in isolation, set up tooling, and keep documentation in sync. Genesis Engine eliminates this by being the single intelligent layer that:
 
-## Benefits
-- Consistency across technical decisions through shared context
-- Alignment between business objectives and engineering execution
-- Full traceability of decisions and project evolution
+- Develops and validates the business idea through AI-driven conversations
+- Maintains a hosted, always-current knowledge base (RAG) for each project
+- Autonomously discovers and ingests best-practice skills before writing code
+- Generates tasks, architecture decisions, and documentation from that knowledge
+- Writes, reviews, and deploys code — consulting the RAG at every step
+- Logs every decision so the system grows smarter over time
 
-## Knowledge Sources
-- Internal documentation and ADRs (Architecture Decision Records)
-- Business rules and strategy documents
-- Project history (`project_dev_log.md`)
-- External sources (e.g., Skills.sh)
+## How a Project Uses Genesis Engine
+
+1. A user describes their idea to Genesis Engine (e.g. "I want to build MyGameList, a game tracking platform similar to MyAnimeList")
+2. Genesis Engine opens a business planning session with the AI model of the user's choice (GPT, Gemini, DeepSeek, or others)
+3. The resulting strategy, OKRs, and decisions are saved into the project's hosted RAG
+4. When development begins, Genesis Engine finds and loads relevant skills into the RAG
+5. All code generation, architectural decisions, and task creation happen through the RAG — no context is ever lost
+6. Infrastructure and deployment are also handled autonomously
+
+The consuming project contains only its own business logic and code. There are no local knowledge bases, no skill directories, no manual RAG configuration.
+
+## Multi-LLM by Design
+
+Genesis Engine is not tied to any single AI provider. Users choose which model powers each type of task:
+
+| Task Type | Recommended Model | Why |
+|-----------|-------------------|-----|
+| Business planning | GPT-4 / Gemini | Strong structured reasoning |
+| Long document analysis | Gemini | Large context window |
+| Code generation | Any | User preference |
+| Cost-sensitive iteration | DeepSeek | High capability, low cost |
+
+The routing is configurable per project and per task type.
+
+## Areas of Responsibility
+
+- **Business** — vision, strategy, OKRs, go-to-market, competitive analysis
+- **Product** — feature definition, prioritization, user stories
+- **Architecture** — system design, ADRs, technology decisions
+- **Engineering** — code generation, review, refactoring
+- **Operations** — infrastructure, CI/CD, monitoring
+- **Documentation** — always in sync, always in the RAG
+
+## The Knowledge Loop
+
+Every action Genesis Engine takes feeds back into the knowledge base:
+
+```
+Idea → Business Planning → RAG
+RAG  → Task Generation  → Code
+Code → Decisions logged → RAG (smarter for next task)
+```
+
+Nothing is ever lost. The system gets better with every project and every decision.

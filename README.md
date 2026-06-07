@@ -1,41 +1,54 @@
 # Genesis Engine
 
-An AI-driven development orchestration platform. Genesis Engine uses RAG (Retrieval-Augmented Generation) so that agents like Claude Code can query relevant knowledge before implementing code, generating tasks, or making decisions. The goal is a system where both business planning and software development are managed and documented by AI agents.
+An autonomous AI-driven development orchestration platform. Genesis Engine acts as the brain behind any software project — from the first business idea to production deployment.
 
-## How It Works
+**Projects do not contain Genesis Engine. They connect to it.**
 
-Before writing any code or making any decision, an agent queries the knowledge base to retrieve relevant context — architecture decisions, business rules, prior choices. After acting, it logs what was done to `project_dev_log.md`. This creates a self-documenting, knowledge-grounded development loop.
+## What It Does
+
+You describe an idea. Genesis Engine handles the rest:
+
+1. **Business planning** — opens an AI-driven session (your choice of GPT, Gemini, DeepSeek, or others) to develop mission, vision, OKRs, and strategy
+2. **Knowledge management** — saves all decisions to a hosted RAG, per project, per namespace
+3. **Skills** — autonomously discovers and ingests relevant best-practice skills before writing code
+4. **Development** — generates tasks, architecture decisions, and code — always consulting the RAG
+5. **Infrastructure & deploy** — provisions infra and manages deployment pipelines
+
+The consuming project contains only its domain code. No local knowledge bases, no skill directories, no manual RAG configuration — just a `genesis.yaml` pointing to the engine.
+
+## Current State
+
+The local prototype is complete and functional. It validates the core loop:
 
 ```
-Query RAG → Implement → Log
+Query RAG → Implement → Log → RAG (smarter next time)
 ```
 
-## Project Structure
+| Component | Status |
+|-----------|--------|
+| Semantic RAG (nomic-embed-text-v1.5, chunking, disk cache) | ✅ |
+| CLI for querying the knowledge base | ✅ |
+| Skills ingestion from skills.sh | ✅ |
+| ProjectJournal (append-only decision log) | ✅ |
+| Hosted RAG Service (Supabase pgvector) | 🔲 Phase 1 |
+| Agent Connector (GPT / Gemini / DeepSeek) | 🔲 Phase 2 |
+| Business Workflow (`genesis plan`) | 🔲 Phase 2 |
+| Autonomous Skills Manager | 🔲 Phase 3 |
+| Task Engine | 🔲 Phase 3 |
+| Infra & Deploy Agent | 🔲 Phase 4 |
 
-```
-genesis_engine/       Core Python modules (RAG engine, CLI, project journal)
-knowledge/
-  dev/                Architecture docs, ADRs, technical patterns
-  business/           Mission, vision, OKRs, go-to-market
-  external/           Skills from skills.sh — best practices, language guides, infra
-.agents/skills/       Raw installed skills (tracked in git)
-scripts/              Seed and skill-import utilities
-docs/                 Vision, architecture, RAG strategy
-project_dev_log.md    Single source of truth — every agent action is logged here
-```
+See [docs/roadmap.md](docs/roadmap.md) for the full phase breakdown.
 
-## Setup
+## Setup (Prototype)
 
 Requires Python 3.11+ and [uv](https://github.com/astral-sh/uv).
 
 ```bash
-git clone https://github.com/<your-org>/Genesis-Engine
+git clone https://github.com/VictorHugoDiasOliveira/Genesis-Engine
 cd Genesis-Engine
 
-# Create venv and install dependencies
 uv venv .venv
 uv pip install sentence-transformers numpy einops --python .venv/bin/python
-
 source .venv/bin/activate
 ```
 
@@ -56,71 +69,46 @@ python -m genesis_engine.cli query "embedding models" -k 10
 # Read the full content of an external skill
 python -m genesis_engine.cli read rag/rag-architect
 python -m genesis_engine.cli read languages/python/python-best-practices
-python -m genesis_engine.cli read best-practices/clean-code
 
-# List all available namespaces
+# List available namespaces
 python -m genesis_engine.cli namespaces
 ```
 
-On the first query, embeddings are computed and cached under `.cache/rag_embeddings/`. Subsequent queries load from cache and are ~5× faster.
-
-## RAG Architecture
-
-The semantic search engine uses `nomic-ai/nomic-embed-text-v1.5` (8192-token context window, CPU inference). Documents are chunked into ~1000-character pieces before encoding; search returns parent documents ranked by their highest-scoring chunk — so you always get a full skill or document as a result, never a fragment.
-
-Knowledge is split into three namespaces:
-
-| Namespace | Content |
-|-----------|---------|
-| `dev` | Architecture docs, ADRs, technical patterns, code history |
-| `business` | Mission/vision, strategy, OKRs, go-to-market |
-| `external` | Skills from [skills.sh](https://skills.sh/) — best practices, language guides, infra, testing |
-
-Falls back to TF-IDF if `sentence-transformers` is not installed.
+On the first query, embeddings are computed and cached under `.cache/rag_embeddings/`. Subsequent queries skip re-encoding (~21s vs ~100s).
 
 ## Adding Skills
 
-Skills from [skills.sh](https://skills.sh/) are installed and automatically added to the RAG knowledge base:
-
 ```bash
-# Find a relevant skill
+# Find a skill
 npx skills find "react best practices"
 
 # Install it
 npx skills add <owner/repo@skill-name>
 
-# Add to the RAG (pick or create a theme)
+# Add to the RAG
 python scripts/add_skill.py <skill-name> languages/javascript
 
-# The skill is now queryable
+# Now queryable
 python -m genesis_engine.cli query "React component patterns" --namespace external
 ```
 
-Installed skills live under `.agents/skills/` and are tracked in git. Knowledge copies live under `knowledge/external/<theme>/<skill-name>/`.
+## Project Structure
 
-## Development Log
-
-Every action taken by an agent is appended to `project_dev_log.md` via `ProjectJournal`:
-
-```python
-from genesis_engine.project_journal import ProjectJournal
-
-journal = ProjectJournal()
-journal.append_entry(
-    title="Added authentication module",
-    details="Implemented JWT-based auth following the patterns in the python-best-practices skill.",
-    category="Implementation",  # Architecture | Implementation | Decision | Task | Documentation
-)
+```
+genesis_engine/       Core engine — RAG, CLI, journal
+knowledge/
+  dev/                Architecture docs, ADRs, roadmap, RAG strategy
+  business/           Vision, strategy, OKRs
+  external/           Skills from skills.sh
+.agents/skills/       Raw installed skills (tracked in git)
+docs/                 Source documents (synced to knowledge/)
+scripts/              Seed and skill-import utilities
+project_dev_log.md    Append-only decision log — single source of truth
 ```
 
-This log is the single source of truth for all decisions, task history, and architectural choices.
+## Documentation
 
-## Seed Script
-
-To run a full ingest-and-search demo:
-
-```bash
-python scripts/seed_rag.py
-```
-
-This ingests all three knowledge namespaces and runs a sample query.
+- [Vision](docs/genesis-vision.md) — what Genesis Engine is and why
+- [Architecture](docs/architecture.md) — components, data flow, current state
+- [RAG Strategy](docs/rag-strategy.md) — embedding model, namespaces, ingestion rules
+- [Roadmap](docs/roadmap.md) — phases from prototype to full platform
