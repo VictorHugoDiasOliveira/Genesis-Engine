@@ -6,4 +6,5 @@
 # chromadb
 sentence-transformers
 numpy
+einops          # required by nomic-embed-text-v1.5
 # faiss-cpu

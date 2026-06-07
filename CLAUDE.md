@@ -15,7 +15,7 @@ Semantic search requires `sentence-transformers` and `numpy`. A virtual environm
 ```bash
 # Create and populate the venv (first time only)
 uv venv .venv
-uv pip install sentence-transformers numpy --python .venv/bin/python
+uv pip install sentence-transformers numpy einops --python .venv/bin/python
 
 # Always use the venv python to run CLI commands
 source .venv/bin/activate
@@ -47,7 +47,7 @@ To upgrade to real embeddings (optional), install from `requirements.txt` after 
 
 ### Core Modules (`genesis_engine/`)
 
-- **`rag.py`** — The RAG engine. Implements `Document`, `SimpleVectorStore` (TF-IDF cosine similarity, no external deps), `RAGKnowledgeBase` (per-namespace ingestion and search), and `KnowledgeManager` (multi-namespace router). Documents are ingested from markdown directories and searched by string query.
+- **`rag.py`** — The RAG engine. `SimpleVectorStore` (TF-IDF fallback, no deps). `SemanticVectorStore` uses `nomic-embed-text-v1.5` (8192-token context, CPU, disk-cached embeddings under `.cache/rag_embeddings/`). Documents are chunked into ~1000-char pieces before encoding; `similarity_search` returns parent documents ranked by max chunk score (Parent Document Retriever pattern). nomic requires `search_document:` and `search_query:` prefixes. `RAGKnowledgeBase` handles per-namespace ingestion. `KnowledgeManager` routes across namespaces.
 
 - **`project_journal.py`** — `ProjectJournal` wraps `project_dev_log.md` with structured append (`append_entry`), section-level update (`update_section`), and listing of all entries. This is how agents log decisions and progress.
 
@@ -128,3 +128,4 @@ If a skill does not fit any existing theme, create a new descriptive subdirector
 - **Skills before complex tasks**: If a task involves a domain with likely external best practices, proactively find and install a relevant skill before starting.
 - **Log after acting**: Use `ProjectJournal` to record what was done, why, and the category from the table above.
 - **Docs as knowledge**: All markdown files in `docs/` are intended to be ingested into the RAG — keep them accurate and up to date, as they directly inform agent behavior.
+- **README always current**: Update `README.md` whenever a change affects the CLI, RAG architecture, knowledge structure, setup steps, or core workflows. The README serves as context for both humans and agents — a stale README is a knowledge gap.

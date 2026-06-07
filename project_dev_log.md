@@ -175,3 +175,32 @@ Results are now semantically ranked: 'How to build a rag?' correctly returns rag
 Added uv venv .venv setup instructions to CLAUDE.md.
 Dependencies: sentence-transformers and numpy added to requirements.txt and installed in .venv.
 
+## RAG Implementation Review — Three Fixes Applied — Implementation
+
+- **Date:** 2026-06-07T00:45:28Z
+- **Category:** Implementation
+
+Reviewed the full RAG implementation after gaining context from rag-architect, rag-implementation, and embedding-strategies skills. Found and fixed three issues.
+
+1. Critical: Silent token truncation (fixed). all-MiniLM-L6-v2 had a 256-token limit. Skill documents (multiple concatenated .md files) easily exceeded 50,000 characters. Only the first ~200 words of each skill were being embedded; the rest was silently discarded. Switched to nomic-ai/nomic-embed-text-v1.5 (8192-token context, ~270MB). Uses device=cpu to avoid competing with other GPU workloads. Also implemented chunking (1000-char chunks, 100-char overlap) using the Parent Document Retriever pattern: documents are split before encoding, but similarity_search returns parent documents ranked by their best chunk score. The nomic model requires task prefixes: search_document: for indexing and search_query: for queries.
+
+2. Important: Re-embedding on every run (fixed). Embeddings were recomputed from scratch every time the CLI ran. SemanticVectorStore now writes embeddings and chunk metadata to .cache/rag_embeddings/ after first ingestion. Subsequent runs load from disk and skip encoding. Cache key is a SHA-256 of the projected final state computed before encoding so the check key always equals the save key. Result: 1:40 first run down to 21s subsequent runs.
+
+3. Minor: Non-batched ingestion (fixed). ingest_markdown_dir and ingest_skill_namespace previously called add_documents one document at a time. Now they collect all documents first and call add_documents once per namespace.
+
+Files changed: genesis_engine/rag.py, requirements.txt (added einops), CLAUDE.md (updated setup command and architecture note).
+
+## README.md Updated — Full Project Documentation — Documentation
+
+- **Date:** 2026-06-07T00:48:11Z
+- **Category:** Documentation
+
+Rewrote README.md to reflect the current state of the project. Added sections covering: how the RAG loop works (Query -> Implement -> Log), project structure, setup instructions with uv, full CLI usage with examples (query, read, namespaces), RAG architecture explanation (nomic model, chunking, parent-document retrieval), skills workflow (find, install, add_skill.py), and ProjectJournal usage. Replaced the minimal 3-section stub with production-ready documentation.
+
+## Rule Added — README.md Must Always Be Kept Up to Date — Decision
+
+- **Date:** 2026-06-07T00:49:32Z
+- **Category:** Decision
+
+Added explicit rule to CLAUDE.md: README.md must be updated whenever a change affects the CLI, RAG architecture, knowledge structure, setup steps, or core workflows. The README serves as context for both humans and agents. Also saved as a feedback memory so the rule persists across conversations.
+
