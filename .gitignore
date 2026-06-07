@@ -31,6 +31,9 @@ htmlcov/
 .vscode/
 .idea/
 
+# Claude Code local project settings
+.claude/
+
 # OS
 .DS_Store
 Thumbs.db
