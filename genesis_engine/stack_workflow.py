@@ -62,27 +62,44 @@ def run(preferences: str, manager: KnowledgeManager, config: GenesisConfig, base
 
     context = _build_context(manager, preferences)
 
+    out_file = dev_dir / "stack.md"
+    existing_stack = out_file.read_text(encoding="utf-8") if out_file.exists() else None
+
     sections_prompt = "\n".join(_SECTIONS)
+
+    if existing_stack:
+        print("Existing stack.md found — updating rather than replacing.\n")
+        user_content = (
+            f"Project context:\n\n{context}\n\n"
+            f"---\n\n"
+            f"Existing stack document (DO NOT discard decisions already made — "
+            f"preserve them unless the new preferences explicitly change them):\n\n"
+            f"{existing_stack}\n\n"
+            f"---\n\n"
+            f"Update the stack document to incorporate the following new preferences or constraints:\n"
+            f"{preferences if preferences else '(no new preferences — review and refine only)'}\n\n"
+            f"Return the complete updated document covering all sections:\n{sections_prompt}"
+        )
+    else:
+        user_content = (
+            f"Project context:\n\n{context}\n\n"
+            f"---\n\n"
+            f"Generate the full tech stack decision document covering these sections:\n\n"
+            f"{sections_prompt}\n\n"
+            f"Be concrete. Every choice must be justified by a specific business or technical "
+            f"need visible in the context above."
+        )
+
     messages = [
         Message(role="system", content=_SYSTEM_PROMPT),
-        Message(
-            role="user",
-            content=(
-                f"Project context:\n\n{context}\n\n"
-                f"---\n\n"
-                f"Generate the full tech stack decision document covering these sections:\n\n"
-                f"{sections_prompt}\n\n"
-                f"Be concrete. Every choice must be justified by a specific business or technical "
-                f"need visible in the context above."
-            ),
-        ),
+        Message(role="user", content=user_content),
     ]
 
-    print("Generating stack document ", end="", flush=True)
+    action = "Updating" if existing_stack else "Generating"
+    print(f"{action} stack document ", end="", flush=True)
     content = connector.chat(messages, task="analysis")
     print("done\n")
 
-    out_file = dev_dir / "stack.md"
     out_file.write_text(content, encoding="utf-8")
     print(f"Saved to {out_file.relative_to(base_dir)}\n")
     print(content)
@@ -91,12 +108,14 @@ def run(preferences: str, manager: KnowledgeManager, config: GenesisConfig, base
     journal_path = base_dir / "project_dev_log.md"
     if journal_path.exists():
         journal = ProjectJournal(str(journal_path))
+        action_word = "updated" if existing_stack else "generated"
         journal.append_entry(
-            title="Stack decision document generated",
+            title=f"Stack decision document {action_word}",
             details=(
-                f"Tech stack document generated via Genesis Engine (provider: {provider}).\n\n"
+                f"Tech stack document {action_word} via Genesis Engine (provider: {provider}).\n\n"
                 f"Saved to knowledge/dev/stack.md.\n\n"
-                + (f"User preferences provided: {preferences}" if preferences else "No explicit preferences — LLM chose based on business context alone.")
+                + (f"User preferences: {preferences}" if preferences else "No new preferences — existing decisions preserved and refined.")
+                + ("\n\nPrevious stack.md was read and used as context — existing decisions preserved." if existing_stack else "")
             ),
             category="Architecture",
         )

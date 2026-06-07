@@ -339,3 +339,16 @@ Bug fixed: _parse_top_skill now skips the generic 'owner/repo@skill' placeholder
 
 Validated on MyGameList: 6 skills installed automatically from a single genesis stack run.
 
+## Fix genesis stack to update rather than overwrite existing stack.md — Implementation
+
+- **Date:** 2026-06-07T19:34:08Z
+- **Category:** Implementation
+
+Previously, genesis stack always replaced stack.md entirely — any manual edits were lost.
+
+New behavior:
+- If stack.md does not exist: generates from scratch (unchanged)
+- If stack.md exists: reads it, passes as context to the LLM, and asks for an update that preserves all prior decisions unless the new preferences explicitly change them
+
+The log entry also distinguishes 'generated' from 'updated'.
+
