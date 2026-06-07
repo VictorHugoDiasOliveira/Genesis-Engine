@@ -21,6 +21,7 @@ _PROVIDER_ENV: dict[str, str] = {
     "gpt-4o":            "OPENAI_API_KEY",
     "openai":            "OPENAI_API_KEY",
     "gemini":            "GEMINI_API_KEY",
+    "groq":              "GROQ_API_KEY",
 }
 
 # OpenAI-compatible base URLs for non-OpenAI providers
@@ -28,6 +29,7 @@ _PROVIDER_BASE_URL: dict[str, str] = {
     "deepseek":          "https://api.deepseek.com",
     "deepseek-reasoner": "https://api.deepseek.com",
     "gemini":            "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "groq":              "https://api.groq.com/openai/v1",
 }
 
 # Default model identifiers per provider
@@ -38,6 +40,7 @@ _PROVIDER_MODEL: dict[str, str] = {
     "gpt-4o":            "gpt-4o",
     "openai":            "gpt-4o",
     "gemini":            "gemini-2.0-flash",
+    "groq":              "llama-3.3-70b-versatile",
 }
 
 
