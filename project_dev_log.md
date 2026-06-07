@@ -294,3 +294,12 @@ Updated: README.md — documented the ask command
 
 Usage: genesis ask "what is the target audience?"
 
+## Add genesis.yaml to Genesis Engine root — Implementation
+
+- **Date:** 2026-06-07T17:16:35Z
+- **Category:** Implementation
+
+Added genesis.yaml to the engine's own repository so that `genesis ask`, `genesis query`, and `genesis plan` work when run from the Genesis Engine directory itself.
+
+Config: mode=local, knowledge_dir=knowledge, all LLM tasks routed to groq.
+

@@ -1,0 +1,14 @@
+project: genesis-engine
+
+# local: uses knowledge/ dir in this repository
+# hosted: connects to a remote Genesis Engine API (available in Phase 1)
+mode: local
+
+knowledge_dir: knowledge
+
+# LLM routing — which provider handles each task type.
+llm_routing:
+  default: groq
+  business: groq
+  code: groq
+  analysis: groq
