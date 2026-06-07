@@ -318,3 +318,24 @@ Logs the decision to project_dev_log.md.
 
 This command fills the gap between business planning (genesis plan) and development — ensuring tech decisions are always grounded in business context.
 
+## Add skill_workflow.py — automatic skill discovery and installation — Implementation
+
+- **Date:** 2026-06-07T19:31:36Z
+- **Category:** Implementation
+
+New module: genesis_engine/skill_workflow.py
+
+Integrated into genesis stack as a second phase — after generating stack.md, automatically searches skills.sh and installs relevant skills.
+
+Flow:
+1. LLM reads stack.md and returns a JSON list of {query, theme, name}
+2. For each technology: npx skills find <query>
+3. Parses top result (skips the 'owner/repo@skill' placeholder in skills.sh header)
+4. npx skills add <ref> (from base_dir — works for consuming projects)
+5. Copies skill markdown from .agents/skills/<name>/ to knowledge/external/<theme>/<name>/
+6. Logs installed skills to project_dev_log.md
+
+Bug fixed: _parse_top_skill now skips the generic 'owner/repo@skill' placeholder that appears in every npx skills find header line.
+
+Validated on MyGameList: 6 skills installed automatically from a single genesis stack run.
+

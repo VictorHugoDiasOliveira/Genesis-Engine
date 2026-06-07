@@ -100,3 +100,16 @@ def run(preferences: str, manager: KnowledgeManager, config: GenesisConfig, base
             ),
             category="Architecture",
         )
+
+    # Automatically find and install relevant skills for the chosen stack
+    print("─" * 60)
+    print("Searching skills.sh for stack technologies...")
+    print("─" * 60)
+    from genesis_engine.skill_workflow import run as install_skills
+    installed = install_skills(stack_content=content, config=config, base_dir=base_dir)
+
+    if installed:
+        print(f"\n{len(installed)} skill(s) installed and ingested into knowledge/external/.")
+    else:
+        print("\nNo skills installed (npx unavailable or no matching skills found).")
+    print()
