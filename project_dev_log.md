@@ -276,3 +276,21 @@ requirements.txt:
 
 Validated: agent and workflow instantiate correctly. API call blocked by insufficient DeepSeek balance — awaiting top-up to run end-to-end test.
 
+## Add genesis ask — RAG-backed Q&A command — Implementation
+
+- **Date:** 2026-06-07T16:25:50Z
+- **Category:** Implementation
+
+Added `genesis ask` command that allows natural language questions answered by the LLM using knowledge base context retrieved via RAG.
+
+New file: genesis_engine/ask_workflow.py
+- Queries KnowledgeManager for relevant docs (threshold >= 0.10)
+- Sorts by score, caps context at 12,000 chars
+- Streams LLM response to stdout
+- Routes to `analysis` task in llm_routing config
+
+Updated: genesis_engine/cli.py — added `ask` subcommand with --namespace and -k flags
+Updated: README.md — documented the ask command
+
+Usage: genesis ask "what is the target audience?"
+

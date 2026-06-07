@@ -119,6 +119,19 @@ def cmd_plan(args: argparse.Namespace) -> None:
     run_business(idea=args.idea, config=config, base_dir=base_dir)
 
 
+def cmd_ask(args: argparse.Namespace) -> None:
+    from genesis_engine.ask_workflow import run as ask
+
+    config, base_dir = _resolve_config()
+
+    if config.is_hosted:
+        raise NotImplementedError("Hosted mode not yet implemented.")
+
+    manager = build_manager()
+    namespaces = list(args.namespace) if args.namespace else None
+    ask(question=args.question, manager=manager, config=config, namespaces=namespaces, k=args.k)
+
+
 def cmd_namespaces(args: argparse.Namespace) -> None:
     manager = build_manager()
     namespaces = manager.list_namespaces()
@@ -172,6 +185,23 @@ def main() -> None:
     plan_parser = subparsers.add_parser("plan", help="Generate a business plan for a project idea")
     plan_parser.add_argument("idea", help="One-sentence description of the project idea")
     plan_parser.set_defaults(func=cmd_plan)
+
+    ask_parser = subparsers.add_parser("ask", help="Ask a question answered by the knowledge base via LLM")
+    ask_parser.add_argument("question", help="Question to ask")
+    ask_parser.add_argument(
+        "--namespace", "-n",
+        action="append",
+        metavar="NS",
+        help="Namespace(s) to search (repeatable). Defaults to all.",
+    )
+    ask_parser.add_argument(
+        "-k",
+        type=int,
+        default=5,
+        metavar="N",
+        help="Number of RAG results to include as context (default: 5)",
+    )
+    ask_parser.set_defaults(func=cmd_ask)
 
     ns_parser = subparsers.add_parser("namespaces", help="List available namespaces")
     ns_parser.set_defaults(func=cmd_namespaces)
