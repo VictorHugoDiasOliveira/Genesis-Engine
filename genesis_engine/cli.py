@@ -132,6 +132,18 @@ def cmd_ask(args: argparse.Namespace) -> None:
     ask(question=args.question, manager=manager, config=config, namespaces=namespaces, k=args.k)
 
 
+def cmd_stack(args: argparse.Namespace) -> None:
+    from genesis_engine.stack_workflow import run as run_stack
+
+    config, base_dir = _resolve_config()
+
+    if config.is_hosted:
+        raise NotImplementedError("Hosted mode not yet implemented.")
+
+    manager = build_manager()
+    run_stack(preferences=args.preferences or "", manager=manager, config=config, base_dir=base_dir)
+
+
 def cmd_namespaces(args: argparse.Namespace) -> None:
     manager = build_manager()
     namespaces = manager.list_namespaces()
@@ -202,6 +214,21 @@ def main() -> None:
         help="Number of RAG results to include as context (default: 5)",
     )
     ask_parser.set_defaults(func=cmd_ask)
+
+    stack_parser = subparsers.add_parser(
+        "stack",
+        help="Generate a tech stack decision document grounded in the business plan",
+    )
+    stack_parser.add_argument(
+        "preferences",
+        nargs="?",
+        default="",
+        help=(
+            "Optional technology preferences or constraints "
+            "(e.g. 'FastAPI + Next.js + Temporal.io, add Swagger and structured logging')"
+        ),
+    )
+    stack_parser.set_defaults(func=cmd_stack)
 
     ns_parser = subparsers.add_parser("namespaces", help="List available namespaces")
     ns_parser.set_defaults(func=cmd_namespaces)

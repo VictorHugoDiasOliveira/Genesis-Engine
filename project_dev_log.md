@@ -303,3 +303,18 @@ Added genesis.yaml to the engine's own repository so that `genesis ask`, `genesi
 
 Config: mode=local, knowledge_dir=knowledge, all LLM tasks routed to groq.
 
+## Add genesis stack command — tech stack advisor — Implementation
+
+- **Date:** 2026-06-07T18:31:44Z
+- **Category:** Implementation
+
+New workflow: genesis_engine/stack_workflow.py
+New CLI command: genesis stack [preferences]
+
+Reads the business RAG (product, market, vision docs) as context, incorporates optional user-specified technology preferences, and asks the LLM to produce a comprehensive stack decision document.
+
+Output saved to knowledge/dev/stack.md in the consuming project.
+Logs the decision to project_dev_log.md.
+
+This command fills the gap between business planning (genesis plan) and development — ensuring tech decisions are always grounded in business context.
+
