@@ -48,8 +48,18 @@ git clone https://github.com/VictorHugoDiasOliveira/Genesis-Engine
 cd Genesis-Engine
 
 uv venv .venv
-uv pip install sentence-transformers numpy einops pyyaml --python .venv/bin/python
+uv pip install -e ".[semantic]" --python .venv/bin/python
 source .venv/bin/activate
+```
+
+### Using Genesis Engine in another project
+
+```bash
+# Local development (symlinked — changes to Genesis Engine reflect immediately)
+uv pip install -e "/path/to/Genesis-Engine[semantic]" --python .venv/bin/python
+
+# From GitHub (once published)
+uv pip install "git+https://github.com/VictorHugoDiasOliveira/Genesis-Engine[semantic]"
 ```
 
 ## Querying the Knowledge Base

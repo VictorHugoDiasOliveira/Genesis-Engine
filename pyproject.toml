@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genesis-engine"
+version = "0.1.0"
+description = "Autonomous AI-driven development orchestration platform"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "openai",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+semantic = [
+    "sentence-transformers",
+    "einops",
+]
+
+[project.scripts]
+genesis = "genesis_engine.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["genesis_engine*"]
