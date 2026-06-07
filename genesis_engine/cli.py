@@ -107,6 +107,18 @@ def cmd_read(args: argparse.Namespace) -> None:
         print()
 
 
+def cmd_plan(args: argparse.Namespace) -> None:
+    sys.path.insert(0, str(ROOT))
+    from genesis_engine.business_workflow import run as run_business
+
+    config, base_dir = _resolve_config()
+
+    if config.is_hosted:
+        raise NotImplementedError("Hosted mode not yet implemented.")
+
+    run_business(idea=args.idea, config=config, base_dir=base_dir)
+
+
 def cmd_namespaces(args: argparse.Namespace) -> None:
     manager = build_manager()
     namespaces = manager.list_namespaces()
@@ -156,6 +168,10 @@ def main() -> None:
         help="Theme path under knowledge/external/ (e.g. best-practices/clean-code)",
     )
     read_parser.set_defaults(func=cmd_read)
+
+    plan_parser = subparsers.add_parser("plan", help="Generate a business plan for a project idea")
+    plan_parser.add_argument("idea", help="One-sentence description of the project idea")
+    plan_parser.set_defaults(func=cmd_plan)
 
     ns_parser = subparsers.add_parser("namespaces", help="List available namespaces")
     ns_parser.set_defaults(func=cmd_namespaces)

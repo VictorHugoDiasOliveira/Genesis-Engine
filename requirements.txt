@@ -8,4 +8,5 @@ sentence-transformers
 numpy
 einops          # required by nomic-embed-text-v1.5
 pyyaml          # genesis.yaml config support
+openai          # agent connector — DeepSeek, OpenAI, Gemini (OpenAI-compatible)
 # faiss-cpu

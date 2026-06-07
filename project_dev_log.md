@@ -249,3 +249,30 @@ Also removed the now-unused _knowledge_external() helper.
 
 Validated: running `python -m genesis_engine.cli namespaces` from MyGameList/ correctly loads MyGameList's knowledge/ namespaces.
 
+## Phase 2 — Agent Connector and Business Workflow Implemented — Implementation
+
+- **Date:** 2026-06-07T02:31:58Z
+- **Category:** Implementation
+
+Implemented the Agent Connector and Business Workflow (Phase 2 of the Genesis Engine roadmap).
+
+genesis_engine/agent.py (new):
+- AgentConnector class with unified chat() and stream() methods
+- Supports DeepSeek, OpenAI (GPT), and Gemini via OpenAI-compatible SDK
+- Provider routing via GenesisConfig.llm_routing (per task type)
+- API keys read exclusively from environment variables (DEEPSEEK_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY)
+
+genesis_engine/business_workflow.py (new):
+- run(idea, config, base_dir) generates a 5-section business plan
+- Sections: vision, market, product, business-model, okrs
+- Each section saved as markdown to knowledge/business/
+- Logs session to project_dev_log.md via ProjectJournal
+
+genesis_engine/cli.py:
+- Added `plan` subcommand: python -m genesis_engine.cli plan "<idea>"
+
+requirements.txt:
+- Added openai package
+
+Validated: agent and workflow instantiate correctly. API call blocked by insufficient DeepSeek balance — awaiting top-up to run end-to-end test.
+
