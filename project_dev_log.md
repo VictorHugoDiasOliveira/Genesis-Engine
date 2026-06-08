@@ -383,3 +383,10 @@ Added a 'When to sync docs' table mapping change types to the specific files tha
 
 Motivation: stale docs in the RAG are worse than no docs — they silently mislead future decisions.
 
+## Add fastapi-python skill to RAG — Implementation
+
+- **Date:** 2026-06-08T02:22:43Z
+- **Category:** Implementation
+
+Installed mindrally/skills@fastapi-python (9.8K installs) into knowledge/external/languages/python/. Added during genesis stack test run.
+
