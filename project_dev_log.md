@@ -352,3 +352,19 @@ New behavior:
 
 The log entry also distinguishes 'generated' from 'updated'.
 
+## Update architecture.md to reflect current implementation state — Documentation
+
+- **Date:** 2026-06-08T01:37:23Z
+- **Category:** Documentation
+
+docs/architecture.md and knowledge/dev/architecture.md updated:
+
+- Orchestration Layer diagram updated to include Stack and Ask workflows
+- Stack Workflow section added: genesis stack, stack.md generation, auto skill install, update-vs-replace behavior
+- Ask Workflow section added: RAG retrieval + LLM Q&A
+- Skills Manager updated to mention skills-lock.json and genesis stack integration
+- Agent Connector updated to list all providers including Groq
+- CLI Commands table added with all current commands
+- Data Flow updated to show plan → stack → develop loop
+- Implementation State table corrected: Agent Connector, Business Workflow, Stack Workflow, Ask Workflow all marked Done
+

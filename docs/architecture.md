@@ -6,25 +6,23 @@ Genesis Engine is a centralized platform. Projects connect to it via API; they d
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     Genesis Engine                        │
+│                     Genesis Engine                       │
 │                                                          │
-│  ┌─────────────┐   ┌──────────────┐   ┌──────────────┐  │
-│  │  Hosted RAG │   │    Agent     │   │   Skills     │  │
-│  │  (per-proj  │◄──│  Connector   │   │   Manager    │  │
-│  │  namespace) │   │  multi-LLM   │   │  (auto-ingest│  │
-│  └──────┬──────┘   └──────┬───────┘   └──────┬───────┘  │
-│         │                 │                  │           │
+│  ┌─────────────┐   ┌──────────────┐    ┌──────────────┐  │
+│  │  Hosted RAG │   │    Agent     │    │   Skills     │  │
+│  │  (per-proj  │◄──│  Connector   │    │   Manager    │  │
+│  │  namespace) │   │  multi-LLM   │    │ (auto-ingest)│  │
+│  └──────┬──────┘   └──────┬───────┘    └──────┬───────┘  │
+│         │                 │                   │          │
 │  ┌──────▼──────────────────▼──────────────────▼───────┐  │
-│  │              Orchestration Layer                    │  │
-│  │   Business Workflow · Task Engine · Dev Workflow   │  │
-│  │   Infra Agent · Deploy Agent · Journal             │  │
-│  └─────────────────────────────────────────────────────┘  │
+│  │              Orchestration Layer                   │  │
+│  │  Business · Stack · Ask · Task · Dev · Infra/Deploy│  │
+│  └────────────────────────────────────────────────────┘  │
 └───────────────────────────┬──────────────────────────────┘
                             │ API
-           ┌────────────────┼────────────────┐
-           │                │                │
-      MyGameList       Project B         Project C
-      (domain code)   (domain code)    (domain code)
+                            │
+                        MyGameList
+                       (domain code)
 ```
 
 ## Core Components
@@ -37,36 +35,38 @@ Each project gets its own namespaces:
 
 | Namespace | Content |
 |-----------|---------|
-| `dev` | Architecture docs, ADRs, code patterns, technical decisions |
+| `dev` | Architecture docs, ADRs, code patterns, stack decisions, technical decisions |
 | `business` | Mission, vision, OKRs, strategy, go-to-market |
 | `external` | Skills from skills.sh — best practices, language guides, infra patterns |
 
-Embeddings use `nomic-ai/nomic-embed-text-v1.5` (8192-token context). Documents are chunked before encoding and search returns parent documents ranked by best-chunk score.
+Embeddings use `nomic-ai/nomic-embed-text-v1.5` (8192-token context). Documents are chunked before encoding and search returns parent documents ranked by best-chunk score (Parent Document Retriever pattern). Embeddings are disk-cached under `.cache/rag_embeddings/` keyed by SHA-256 of the document state.
 
 ### 2. Agent Connector
 
-A unified client that routes tasks to the appropriate LLM provider. The user configures which provider to use per task type or sets a default.
+A unified client that routes tasks to the appropriate LLM provider based on `llm_routing` in `genesis.yaml`.
 
-Supported providers: **GPT (OpenAI)**, **Gemini (Google)**, **DeepSeek**, and any OpenAI-compatible API.
+Supported providers: **OpenAI (GPT)**, **Gemini (Google)**, **DeepSeek**, **Groq** (free tier, Llama 3.3), and any OpenAI-compatible API. API keys are read exclusively from environment variables.
 
-Every agent call is enriched with RAG context before being sent to the model. Responses are parsed and stored back into the relevant namespace.
+Every agent call is enriched with RAG context before being sent to the model.
 
 ### 3. Skills Manager
 
-Autonomous skill management — Genesis Engine decides what skills a project needs, finds them on skills.sh, installs them, and ingests them into the `external` namespace.
+Autonomous skill management — Genesis Engine decides what skills a project needs based on the tech stack document, finds them on skills.sh, installs them, and ingests them into the `external` namespace. No human intervention required.
 
-No human intervention required. When a project starts a new domain (e.g. adding a React frontend), Genesis Engine fetches the relevant skill and the RAG is ready before the first line of code is written.
+Skills are installed to `.agents/skills/<name>/` and tracked in `skills-lock.json`. The `genesis stack` command triggers auto-installation as a second phase after generating the stack document.
 
 ### 4. Orchestration Layer
 
 High-level workflows that combine the components above:
 
-- **Business Workflow** — takes a project idea, runs an AI-driven planning session, saves strategy and OKRs to the `business` namespace
-- **Task Engine** — generates, prioritizes, and tracks tasks from RAG context and business objectives
-- **Dev Workflow** — queries RAG before every implementation; writes code, ADRs, and documentation
-- **Infra Agent** — provisions infrastructure based on architecture decisions in the RAG
-- **Deploy Agent** — handles CI/CD pipelines and production deployments
-- **Journal** — every action by every agent is appended to the project log; the log is re-ingested into the RAG after each session
+- **Business Workflow** (`genesis plan`) — takes a project idea, runs an AI-driven planning session, saves vision, market, product, business model, and OKRs to the `business` namespace
+- **Stack Workflow** (`genesis stack`) — reads the business RAG context and user technology preferences, generates a comprehensive tech stack decision document saved to `knowledge/dev/stack.md`, then automatically queries skills.sh and installs relevant skills for every technology in the stack. If `stack.md` already exists, it is read as context and updated rather than replaced.
+- **Ask Workflow** (`genesis ask`) — retrieves the most relevant documents from the RAG across any namespace and sends them as context to the LLM to answer natural language questions about the project
+- **Task Engine** — generates, prioritizes, and tracks tasks from RAG context and business objectives *(Phase 3)*
+- **Dev Workflow** — queries RAG before every implementation; writes code, ADRs, and documentation *(Phase 3)*
+- **Infra Agent** — provisions infrastructure based on architecture decisions in the RAG *(Phase 4)*
+- **Deploy Agent** — handles CI/CD pipelines and production deployments *(Phase 4)*
+- **Journal** — every action by every agent is appended to `project_dev_log.md`; this log is the single source of truth for all decisions
 
 ### 5. Project Registry
 
@@ -75,16 +75,27 @@ A lightweight configuration that connects a project to Genesis Engine:
 ```yaml
 # genesis.yaml (in the consuming project)
 project: my-game-list
-genesis_engine_url: https://api.genesis-engine.io   # or self-hosted
-api_key: <key>
-default_llm: deepseek                               # or gpt-4, gemini, etc.
+mode: local          # "local" (prototype) | "hosted" (Phase 1)
+knowledge_dir: knowledge
 llm_routing:
-  business: gpt-4
-  code: deepseek
-  analysis: gemini
+  default: groq
+  business: groq
+  code: groq
+  analysis: groq
 ```
 
 That is the only Genesis Engine artifact inside a consuming project.
+
+## CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `genesis plan "<idea>"` | Generate business plan (5 sections → `knowledge/business/`) |
+| `genesis stack ["<preferences>"]` | Generate tech stack document + auto-install skills from skills.sh |
+| `genesis ask "<question>"` | RAG-backed Q&A — retrieves context, answers via LLM |
+| `genesis query "<query>"` | Raw RAG search — returns scored document list |
+| `genesis read <theme>` | Print full content of an external skill theme |
+| `genesis namespaces` | List loaded namespaces |
 
 ## Data Flow
 
@@ -92,40 +103,35 @@ That is the only Genesis Engine artifact inside a consuming project.
 User describes idea
       │
       ▼
-Agent Connector (LLM of choice)
-      │  enriched with RAG context
+genesis plan → Business Workflow
+      │  saves vision, market, product, OKRs to business namespace
       ▼
-Business Workflow → saves to business namespace
-      │
+genesis stack → Stack Workflow
+      │  reads business context → generates stack.md → saves to dev namespace
+      │  → Skills Manager → fetches skills from skills.sh → saves to external namespace
       ▼
-Skills Manager → fetches relevant skills → saves to external namespace
-      │
+Development begins
+      │  agent reads RAG before every decision (genesis ask / genesis query)
       ▼
-Task Engine → generates tasks from RAG
-      │
+Journal → logs everything to project_dev_log.md
+      │  (future: re-ingested into RAG after each session)
       ▼
-Dev Workflow → queries RAG → generates code
-      │
-      ▼
-Journal → logs everything → re-ingested into RAG
-      │
-      ▼
-Infra/Deploy Agent → provisions and deploys
+Task Engine → Dev Workflow → Infra/Deploy Agent  [Phase 3–4]
 ```
 
 ## Current Implementation State
 
-The current codebase is a working prototype of the local components:
-
 | Component | Status |
 |-----------|--------|
-| Local RAG (nomic embeddings + chunking + disk cache) | ✅ Done |
-| CLI for querying the knowledge base | ✅ Done |
+| Local RAG (nomic embeddings, chunking, disk cache) | ✅ Done |
+| CLI — `query`, `read`, `namespaces` | ✅ Done |
 | ProjectJournal (append-only log) | ✅ Done |
+| Agent Connector (OpenAI, Gemini, DeepSeek, Groq) | ✅ Done |
+| Business Workflow (`genesis plan`) | ✅ Done |
+| Stack Workflow (`genesis stack`) + auto skill install | ✅ Done |
+| Ask Workflow (`genesis ask`) | ✅ Done |
 | Skills ingestion from skills.sh | ✅ Done |
-| Hosted RAG Service | 🔲 Phase 1 |
-| Agent Connector (multi-LLM) | 🔲 Phase 2 |
-| Business Workflow | 🔲 Phase 2 |
-| Skills Manager (autonomous) | 🔲 Phase 3 |
+| Hosted RAG Service (Supabase pgvector) | 🔲 Phase 1 |
 | Task Engine | 🔲 Phase 3 |
-| Infra/Deploy Agent | 🔲 Phase 4 |
+| Dev Workflow (autonomous coding) | 🔲 Phase 3 |
+| Infra / Deploy Agent | 🔲 Phase 4 |
