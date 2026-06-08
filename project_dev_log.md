@@ -368,3 +368,18 @@ docs/architecture.md and knowledge/dev/architecture.md updated:
 - Data Flow updated to show plan → stack → develop loop
 - Implementation State table corrected: Agent Connector, Business Workflow, Stack Workflow, Ask Workflow all marked Done
 
+## Add doc sync rule to implementation workflow in CLAUDE.md — Documentation
+
+- **Date:** 2026-06-08T01:38:26Z
+- **Category:** Documentation
+
+The implementation workflow now has 4 steps instead of 3:
+1. Query RAG
+2. Implement
+3. Sync docs — update docs/ and knowledge/dev/ when architecture, CLI, or workflows change
+4. Log
+
+Added a 'When to sync docs' table mapping change types to the specific files that must be updated.
+
+Motivation: stale docs in the RAG are worse than no docs — they silently mislead future decisions.
+

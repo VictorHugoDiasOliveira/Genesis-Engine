@@ -87,9 +87,23 @@ Every change in this repository must follow this cycle — no exceptions. This i
 
 1. **Query** — search the RAG for relevant context before starting
 2. **Implement** — write code or update documentation
-3. **Log** — record what was done in `project_dev_log.md` via `ProjectJournal.append_entry()`
+3. **Sync docs** — if the change affects architecture, CLI, workflows, or any component described in `docs/`, update the relevant doc file and copy it to `knowledge/dev/` so the RAG reflects the new reality
+4. **Log** — record what was done in `project_dev_log.md` via `ProjectJournal.append_entry()`
 
 **There are no changes too small to log.** Every action taken by Claude Code must be traceable in `project_dev_log.md`.
+
+### When to sync docs
+
+| Change type | Doc to update |
+|-------------|---------------|
+| New CLI command or workflow | `docs/architecture.md` + `knowledge/dev/architecture.md` |
+| New component or module | `docs/architecture.md` + `knowledge/dev/architecture.md` |
+| RAG strategy change | `docs/rag-strategy.md` + `knowledge/dev/rag-strategy.md` |
+| Roadmap or phase change | `docs/roadmap.md` + `knowledge/dev/roadmap.md` |
+| Vision or platform model change | `docs/genesis-vision.md` + `knowledge/business/genesis-vision.md` |
+| Setup or usage change | `README.md` |
+
+The `docs/` files are the source — always edit them first, then copy to `knowledge/dev/` (or `knowledge/business/`). A stale doc in the RAG is worse than no doc, because it silently misleads future decisions.
 
 ## Log Entry Categories
 
